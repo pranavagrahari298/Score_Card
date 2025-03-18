@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Scorecard</title>
+  <style>
+    /* General Styles */
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(135deg, #e7f3ff, #00c6ff);
+      color: #fff;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 2.5rem;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    .container {
+      background: lightcyan;
+      color: #333;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      width: 90%;
+      max-width: 800px;
+    }
+
+    .scoreboard {
+      display: flex;
+      justify-content: space-between;
+      margin: 20px 0;
+      gap: 20px;
+    }
+
+    .team {
+      flex: 1;
+      background: #e7f3ff;
+      border-radius: 10px;
+      padding: 15px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      text-align: center;
+    }
+
+    .team h2 {
+      margin-bottom: 10px;
+      color: #0056b3;
+      font-size: 1.8rem;
+    }
+
+    .team p {
+      font-size: 1.2rem;
+      margin: 10px 0;
+    }
+    .pp{
+      background-color: magenta;
+    }
+    .ppp{
+      background-color:darkcyan;
+    }
+
+    /* Button Styles */
+    button {
+      padding: 10px 15px;
+      margin: 5px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      background: #007bff;
+      color: #fff;
+      transition: transform 0.2s, background-color 0.3s;
+    }
+
+    button:hover {
+      background: #0056b3;
+      transform: scale(1.05);
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    .reset button {
+      background: #ff4d4d;
+      color: #fff;
+    }
+
+    .reset button:hover {
+      background: #cc0000;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .scoreboard {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .team {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Live Cricket Scorecard</h1>
+    <div class="scoreboard">
+      <!-- Team A -->
+      <div class="team">
+        <h2>Team A</h2>
+        <p>Score: <span id="teamAScore">0</span>/<span id="teamAWickets">0</span></p>
+        <p>Overs: <span id="teamAOvers">0.0</span></p>
+        <button onclick="updateScore('A', 1)">+1 Run</button>
+        <button onclick="updateScore('A', 4)">+4 Runs</button>
+        <button onclick="updateScore('A', 6)">+6 Runs</button>
+        <button class="pp" onclick="addBall('A')">+1 Ball</button>
+        <button class="pp" onclick="subtractBall('A', -1)">-1 Ball</button>
+        <button class="ppp" onclick="addWicket('A')">+1 Wicket</button>
+        <button class="ppp" onclick="subtractWicket('A')">-1 Wicket</button>
+      </div>
+      <!-- Team B -->
+      <div class="team">
+        <h2>Team B</h2>
+        <p>Score: <span id="teamBScore">0</span>/<span id="teamBWickets">0</span></p>
+        <p>Overs: <span id="teamBOvers">0.0</span></p>
+        <button onclick="updateScore('B', 1)">+1 Run</button>
+        <button onclick="updateScore('B', 4)">+4 Runs</button>
+        <button onclick="updateScore('B', 6)">+6 Runs</button>
+        <button class="pp" onclick="addBall('B')">+1 Ball</button>
+        <button class="pp" onclick="subtractBall('A', -1)">-1 Ball</button>
+        <button class="ppp" onclick="addWicket('B')">+1 Wicket</button>
+        <button class="ppp" onclick="subtractWicket('B')">-1 Wicket</button>
+      </div>
+    </div>
+    <div class="reset">
+      <button onclick="resetScores()">Reset Scores</button>
+    </div>
+  </div>
+  <script>
+    // Initialize scores, wickets, and overs
+    let teamAScore = 0, teamAWickets = 0, teamABalls = 0;
+    let teamBScore = 0, teamBWickets = 0, teamBBalls = 0;
+
+    // Function to update runs
+    function updateScore(team, runs) {
+      if (team === 'A') {
+        teamAScore += runs;
+        document.getElementById('teamAScore').textContent = teamAScore;
+      } else if (team === 'B') {
+        teamBScore += runs;
+        document.getElementById('teamBScore').textContent = teamBScore;
+      }
+    }
+
+    // Function to add a ball
+    function addBall(team) {
+      if (team === 'A') {
+        teamABalls++;
+        updateOvers('A', teamABalls);
+      } else if (team === 'B') {
+        teamBBalls++;
+        updateOvers('B', teamBBalls);
+      }
+    }
+    function subtractBall(team) {
+      if (team === 'A') {
+        teamABalls--;
+        updateOvers('A', teamABalls);
+      } else if (team === 'B') {
+        teamBBalls--;
+        updateOvers('B', teamBBalls);
+      }
+    }
+
+
+    // Function to add wickets
+    function addWicket(team) {
+      if (team === 'A' && teamAWickets < 10) {
+        teamAWickets++;
+        document.getElementById('teamAWickets').textContent = teamAWickets;
+      } else if (team === 'B' && teamBWickets < 10) {
+        teamBWickets++;
+        document.getElementById('teamBWickets').textContent = teamBWickets;
+      }
+    }
+    function subtractWicket(team) {
+      if (team === 'A' && teamAWickets < 10) {
+        teamAWickets--;
+        document.getElementById('teamAWickets').textContent = teamAWickets;
+      } else if (team === 'B' && teamBWickets < 10) {
+        teamBWickets--;
+        document.getElementById('teamBWickets').textContent = teamBWickets;
+      }
+    }
+
+    // Function to update overs
+    function updateOvers(team, balls) {
+      const overs = Math.floor(balls / 6);
+      const remainingBalls = balls % 6;
+      if (team === 'A') {
+        document.getElementById('teamAOvers').textContent = `${overs}.${remainingBalls}`;
+      } else if (team === 'B') {
+        document.getElementById('teamBOvers').textContent = `${overs}.${remainingBalls}`;
+      }
+    }
+
+    // Function to reset scores, wickets, and overs
+    function resetScores() {
+      teamAScore = teamAWickets = teamABalls = teamBScore = teamBWickets = teamBBalls = 0;
+      document.getElementById('teamAScore').textContent = teamAScore;
+      document.getElementById('teamAWickets').textContent = teamAWickets;
+      document.getElementById('teamAOvers').textContent = '0.0';
+      document.getElementById('teamBScore').textContent = teamBScore;
+      document.getElementById('teamBWickets').textContent = teamBWickets;
+      document.getElementById('teamBOvers').textContent = '0.0';
+    }
+  </script>
+</body>
+</html>
